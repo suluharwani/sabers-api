@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Profile API Documentation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>API Documentation</h1>
+            <nav>
+                <ul>
+                    <li><a href="#authentication">Authentication</a></li>
+                    <li><a href="#users">Users</a></li>
+                    <li><a href="#sliders">Sliders</a></li>
+                    <li><a href="#sponsors">Sponsors</a></li>
+                    <li><a href="#contacts">Contacts</a></li>
+                    <li><a href="#clients">Clients</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#blogs">Blogs</a></li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div class="content">
+            <section id="authentication">
+                <h2>Authentication</h2>
+                <div class="endpoint">
+                    <div class="endpoint-info">
+                        <h3>Login</h3>
+                        <p><span class="method">POST</span> /api/login</p>
+                        <h4>Request Body:</h4>
+                        <pre><code>{
+    "email": "user@example.com",
+    "password": "password123"
+}</code></pre>
+                    </div>
+                    <div class="endpoint-example">
+                        <h4>Response:</h4>
+                        <pre><code>{
+    "status": 200,
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-info">
+                        <h3>Register</h3>
+                        <p><span class="method">POST</span> /api/register</p>
+                        <h4>Request Body:</h4>
+                        <pre><code>{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123"
+}</code></pre>
+                    </div>
+                    <div class="endpoint-example">
+                        <h4>Response:</h4>
+                        <pre><code>{
+    "status": 201,
+    "message": "User created successfully",
+    "id": 1
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="users">
+                <h2>Users</h2>
+                <div class="endpoint">
+                    <div class="endpoint-info">
+                        <h3>List Users</h3>
+                        <p><span class="method">GET</span> /api/users</p>
+                        <p>Headers required:</p>
+                        <pre><code>Authorization: Bearer {token}</code></pre>
+                    </div>
+                    <div class="endpoint-example">
+                        <h4>Response:</h4>
+                        <pre><code>[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "created_at": "2024-01-10 12:00:00",
+        "updated_at": "2024-01-10 12:00:00"
+    }
+]</code></pre>
+                    </div>
+                </div>
+
+                <!-- Other user endpoints... -->
+            </section>
+
+            <section id="sliders">
+                <h2>Sliders</h2>
+                <div class="endpoint">
+                    <div class="endpoint-info">
+                        <h3>Create Slider</h3>
+                        <p><span class="method">POST</span> /api/sliders</p>
+                        <p>Headers required:</p>
+                        <pre><code>Authorization: Bearer {token}
+Content-Type: multipart/form-data</code></pre>
+                        <h4>Request Body:</h4>
+                        <pre><code>title: "Main Banner"
+description: "Welcome to our company"
+image: (file)</code></pre>
+                    </div>
+                    <div class="endpoint-example">
+                        <h4>Response:</h4>
+                        <pre><code>{
+    "id": 1,
+    "title": "Main Banner",
+    "description": "Welcome to our company",
+    "image": "1705123456_image.jpg",
+    "created_at": "2024-01-10 12:00:00"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Continue with other sections... -->
+        </div>
+    </div>
+</body>
+</html>

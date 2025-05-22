@@ -1,0 +1,9 @@
+{
+    "name": "codeigniter4/appstarter",
+    "description": "RESTful API for Company Profile using CodeIgniter 4",
+    "require": {
+        "php": "^7.4 || ^8.2",
+        "codeigniter4/framework": "^4.5",
+        "firebase/php-jwt": "^6.10"
+    }
+}
