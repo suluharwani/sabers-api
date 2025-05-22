@@ -1,5 +1,5 @@
 <?php
-// app/Controllers/Api/BlogController.php
+
 namespace App\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
@@ -10,178 +10,167 @@ use App\Models\BlogTagModel;
 class BlogController extends ResourceController
 {
     protected $format = 'json';
+    protected $model;
+    protected $categoryModel;
+    protected $tagModel;
 
-    // Get all blogs
+    public function __construct()
+    {
+        $this->model = new BlogModel();
+        $this->categoryModel = new BlogCategoryModel();
+        $this->tagModel = new BlogTagModel();
+    }
+
+    // public function index()
+    // {
+    //     $blogs = $this->model->getWithRelations();
+        
+    //     // Add tags to each blog
+    //     foreach ($blogs as &$blog) {
+    //         $blog['tags'] = $this->model->getTags($blog['id']);
+    //     }
+        
+    //     return $this->respond($blogs);
+    // }
+
+    // public function show($id = null)
+    // {
+    //     $blog = $this->model->getWithRelations($id);
+    //     if (!$blog) {
+    //         return $this->failNotFound('Blog post not found');
+    //     }
+        
+    //     $blog['tags'] = $this->model->getTags($blog['id']);
+    //     return $this->respond($blog);
+    // }
     public function index()
     {
-        $model = new BlogModel();
-        $blogs = $model->select('blogs.*, blog_categories.name as category_name, users.name as author_name')
-            ->join('blog_categories', 'blog_categories.id = blogs.category_id')
-            ->join('users', 'users.id = blogs.author_id')
-            ->findAll();
-
-        return $this->respond([
-            'status' => 200,
-            'data' => $blogs
-        ]);
+        $data = $this->model->orderBy('title', 'ASC')->findAll();
+        return $this->respond($data);
     }
 
-    // Get a single blog by ID
     public function show($id = null)
     {
-        $model = new BlogModel();
-        $blog = $model->select('blogs.*, blog_categories.name as category_name, users.name as author_name')
-            ->join('blog_categories', 'blog_categories.id = blogs.category_id')
-            ->join('users', 'users.id = blogs.author_id')
-            ->find($id);
-
-        if ($blog) {
-            return $this->respond([
-                'status' => 200,
-                'data' => $blog
-            ]);
-        } else {
-            return $this->failNotFound('Blog not found');
+        $data = $this->model->find($id);
+        if (!$data) {
+            return $this->failNotFound('Client not found');
         }
+        return $this->respond($data);
     }
 
-    // Create a new blog
     public function create()
     {
         $rules = [
-            'title' => 'required',
-            'slug' => 'required|is_unique[blogs.slug]',
+            'title' => 'required|min_length[3]',
             'content' => 'required',
-            'category_id' => 'required|numeric',
-            'author_id' => 'required|numeric',
+            'featured_image' => 'uploaded[featured_image]|max_size[featured_image,4096]|is_image[featured_image]',
+            'category_id' => 'is_natural_no_zero',
             'status' => 'required|in_list[draft,published,archived]',
-            'featured_image' => 'uploaded[featured_image]|max_size[featured_image,2048]|mime_in[featured_image,image/jpg,image/jpeg,image/png]',
+            'tags' => 'permit_empty|is_natural_no_zero[]'
         ];
 
         if (!$this->validate($rules)) {
-            return $this->failValidationErrors($this->validator->getErrors());
+            return $this->fail($this->validator->getErrors());
         }
 
-        // Upload featured image
-        $featuredImage = $this->request->getFile('featured_image');
-        if ($featuredImage->isValid() && !$featuredImage->hasMoved()) {
-            $newName = $featuredImage->getRandomName();
-            $featuredImage->move(WRITEPATH . 'uploads', $newName);
-        } else {
-            return $this->fail('Failed to upload featured image');
-        }
+        $image = $this->request->getFile('featured_image');
+        $newName = $image->getRandomName();
+        $image->move(FCPATH . 'uploads/blogs', $newName);
 
-        $model = new BlogModel();
         $data = [
             'title' => $this->request->getVar('title'),
-            'slug' => $this->request->getVar('slug'),
             'content' => $this->request->getVar('content'),
             'excerpt' => $this->request->getVar('excerpt'),
-            'featured_image' => $newName, // Simpan nama file gambar
+            'featured_image' => $newName,
             'category_id' => $this->request->getVar('category_id'),
-            'author_id' => $this->request->getVar('author_id'),
-            'status' => $this->request->getVar('status'),
-            'published_at' => $this->request->getVar('published_at'),
+            'author_id' => 1, // TODO: Get from authenticated user
+            'status' => $this->request->getVar('status')
         ];
 
-        $blogId = $model->insert($data);
-
-        // Attach tags if provided
-        $tagIds = $this->request->getVar('tag_ids');
-        if ($tagIds && is_array($tagIds)) {
-            $model->tags()->attach($tagIds);
+        $id = $this->model->insert($data);
+        
+        // Sync tags if provided
+        $tags = $this->request->getVar('tags');
+        if (!empty($tags)) {
+            $this->model->syncTags($id, $tags);
         }
-
-        return $this->respondCreated([
-            'status' => 201,
-            'message' => 'Blog created successfully',
-            'id' => $blogId
-        ]);
+        
+        $blog = $this->model->getWithRelations($id);
+        $blog['tags'] = $this->model->getTags($id);
+        
+        return $this->respondCreated($blog);
     }
 
-    // Update a blog
     public function update($id = null)
     {
-        $model = new BlogModel();
-        $blog = $model->find($id);
-
+        $blog = $this->model->find($id);
         if (!$blog) {
-            return $this->failNotFound('Blog not found');
+            return $this->failNotFound('Blog post not found');
         }
 
         $rules = [
-            'title' => 'required',
-            'slug' => "required|is_unique[blogs.slug,id,{$id}]",
+            'title' => 'required|min_length[3]',
             'content' => 'required',
-            'category_id' => 'required|numeric',
-            'author_id' => 'required|numeric',
+            // 'category_id' => 'required|is_natural_no_zero|exists[blog_categories.id]',
             'status' => 'required|in_list[draft,published,archived]',
-            'featured_image' => 'max_size[featured_image,2048]|mime_in[featured_image,image/jpg,image/jpeg,image/png]',
+            'tags' => 'permit_empty|is_natural_no_zero[]'
         ];
 
+        if ($this->request->getFile('featured_image') !== null) {
+            $rules['featured_image'] = 'uploaded[featured_image]|max_size[featured_image,4096]|is_image[featured_image]';
+        }
+
         if (!$this->validate($rules)) {
-            return $this->failValidationErrors($this->validator->getErrors());
+            return $this->fail($this->validator->getErrors());
         }
 
         $data = [
             'title' => $this->request->getVar('title'),
-            'slug' => $this->request->getVar('slug'),
             'content' => $this->request->getVar('content'),
             'excerpt' => $this->request->getVar('excerpt'),
             'category_id' => $this->request->getVar('category_id'),
-            'author_id' => $this->request->getVar('author_id'),
-            'status' => $this->request->getVar('status'),
-            'published_at' => $this->request->getVar('published_at'),
+            'status' => $this->request->getVar('status')
         ];
 
-        // Handle featured image upload if provided
-        $featuredImage = $this->request->getFile('featured_image');
-        if ($featuredImage && $featuredImage->isValid() && !$featuredImage->hasMoved()) {
-            $newName = $featuredImage->getRandomName();
-            $featuredImage->move(WRITEPATH . 'uploads', $newName);
-
-            // Hapus gambar lama jika ada
-            if ($blog['featured_image']) {
-                unlink(WRITEPATH . 'uploads/' . $blog['featured_image']);
+        if ($this->request->getFile('featured_image') !== null) {
+            // Delete old image
+            if (file_exists(FCPATH . 'uploads/blogs/' . $blog['featured_image'])) {
+                unlink(FCPATH . 'uploads/blogs/' . $blog['featured_image']);
             }
 
+            $image = $this->request->getFile('featured_image');
+            $newName = $image->getRandomName();
+            $image->move(FCPATH . 'uploads/blogs', $newName);
             $data['featured_image'] = $newName;
         }
 
-        $model->update($id, $data);
-
+        $this->model->update($id, $data);
+        
         // Sync tags if provided
-        $tagIds = $this->request->getVar('tag_ids');
-        if ($tagIds && is_array($tagIds)) {
-            $model->tags()->sync($tagIds);
+        $tags = $this->request->getVar('tags');
+        if ($tags !== null) {
+            $this->model->syncTags($id, $tags);
         }
-
-        return $this->respond([
-            'status' => 200,
-            'message' => 'Blog updated successfully'
-        ]);
+        
+        $blog = $this->model->getWithRelations($id);
+        $blog['tags'] = $this->model->getTags($id);
+        
+        return $this->respond($blog);
     }
 
-    // Delete a blog
     public function delete($id = null)
     {
-        $model = new BlogModel();
-        $blog = $model->find($id);
-
+        $blog = $this->model->find($id);
         if (!$blog) {
-            return $this->failNotFound('Blog not found');
+            return $this->failNotFound('Blog post not found');
         }
 
-        // Hapus gambar jika ada
-        if ($blog['featured_image']) {
-            unlink(WRITEPATH . 'uploads/' . $blog['featured_image']);
+        // Delete featured image
+        if (file_exists(FCPATH . 'uploads/blogs/' . $blog['featured_image'])) {
+            unlink(FCPATH . 'uploads/blogs/' . $blog['featured_image']);
         }
 
-        $model->delete($id);
-
-        return $this->respond([
-            'status' => 200,
-            'message' => 'Blog deleted successfully'
-        ]);
+        $this->model->delete($id);
+        return $this->respondDeleted(['message' => 'Blog post deleted successfully']);
     }
 }
