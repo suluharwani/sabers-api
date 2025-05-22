@@ -10,7 +10,7 @@ class ProjectModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = [
         'title', 'client_id', 'description', 'thumbnail',
-        'start_date', 'end_date', 'status', 'budget', 'location'
+        'start_date', 'end_date', 'status', 'budget', 'location','category'
     ];
     protected $useTimestamps = true;
     protected $dateFormat = 'datetime';

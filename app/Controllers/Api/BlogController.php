@@ -109,11 +109,11 @@ class BlogController extends ResourceController
         }
 
         $rules = [
-            'title' => 'required|min_length[3]',
-            'content' => 'required',
-            // 'category_id' => 'required|is_natural_no_zero|exists[blog_categories.id]',
-            'status' => 'required|in_list[draft,published,archived]',
-            'tags' => 'permit_empty|is_natural_no_zero[]'
+            // 'title' => 'required|min_length[3]',
+            // 'content' => 'required',
+            // // 'category_id' => 'required|is_natural_no_zero|exists[blog_categories.id]',
+            // 'status' => 'required|in_list[draft,published,archived]',
+            // 'tags' => 'permit_empty|is_natural_no_zero[]'
         ];
 
         if ($this->request->getFile('featured_image') !== null) {

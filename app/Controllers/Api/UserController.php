@@ -62,9 +62,9 @@ class UserController extends ResourceController
         }
 
         $rules = [
-            'name' => 'required',
-            'email' => 'required|valid_email|is_unique[users.email,id,' . $id . ']',
-            'password' => 'permit_empty|min_length[6]'
+            // 'name' => 'required',
+            // 'email' => 'required|valid_email|is_unique[users.email,id,' . $id . ']',
+            // 'password' => 'permit_empty|min_length[6]'
         ];
 
         if (!$this->validate($rules)) {

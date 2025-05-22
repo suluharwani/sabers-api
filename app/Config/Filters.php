@@ -13,7 +13,7 @@ class Filters extends BaseConfig
 
     public $globals = [
         'before' => [
-            'auth' => ['except' => ['api/login', 'api/register', 'api/users','api/sliders','api/sponsors','api/contacts','api/clients','api/projects','api/projects/*','api/users/*','api/sliders/*','api/sponsors/*','api/contacts/*','api/clients/*','api/blogs','api/blogs/*']]
+            'auth' => ['except' => ['api/login', 'api/register', 'api/users','api/sliders','api/sponsors','api/contacts','api/clients','api/projects','api/projects/*','api/users/*','api/sliders/*','api/sponsors/*','api/contacts/*','api/clients/*','api/blogs','api/certifications','api/certifications/*']],
         ],
         'after' => [
             // 'toolbar',

@@ -65,7 +65,7 @@ class SliderController extends ResourceController
         }
 
         $rules = [
-            'title' => 'required'
+            // 'title' => 'required'
         ];
 
         if ($this->request->getFile('image') !== null) {

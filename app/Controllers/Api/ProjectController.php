@@ -35,6 +35,7 @@ class ProjectController extends ResourceController
         $rules = [
             'title' => 'required|min_length[3]',
             'description' => 'required',
+            'category' => 'required',
             'thumbnail' => 'uploaded[thumbnail]|max_size[thumbnail,4096]|is_image[thumbnail]',
             'start_date' => 'required|valid_date',
             'end_date' => 'permit_empty|valid_date',
@@ -54,6 +55,7 @@ class ProjectController extends ResourceController
 
         $data = [
             'title' => $this->request->getVar('title'),
+            'category' => $this->request->getVar('category'),
             'client_id' => $this->request->getVar('client_id'),
             'description' => $this->request->getVar('description'),
             'thumbnail' => $newName,
@@ -78,14 +80,14 @@ class ProjectController extends ResourceController
         }
 
         $rules = [
-            'title' => 'required|min_length[3]',
-            'description' => 'required',
-            'start_date' => 'required|valid_date',
-            'end_date' => 'permit_empty|valid_date',
-            'status' => 'required|in_list[planned,ongoing,completed,cancelled]',
-            'budget' => 'permit_empty|numeric',
-            'location' => 'permit_empty|min_length[2]',
-            'client_id' => 'permit_empty|is_natural_no_zero|field_exists[clients.id]'
+            // 'title' => 'required|min_length[3]',
+            // 'description' => 'required',
+            // 'start_date' => 'required|valid_date',
+            // 'end_date' => 'permit_empty|valid_date',
+            // 'status' => 'required|in_list[planned,ongoing,completed,cancelled]',
+            // 'budget' => 'permit_empty|numeric',
+            // 'location' => 'permit_empty|min_length[2]',
+            // 'client_id' => 'permit_empty|is_natural_no_zero|field_exists[clients.id]'
         ];
 
         if ($this->request->getFile('thumbnail') !== null) {
@@ -100,6 +102,7 @@ class ProjectController extends ResourceController
             'title' => $this->request->getVar('title'),
             'client_id' => $this->request->getVar('client_id'),
             'description' => $this->request->getVar('description'),
+            'category' => $this->request->getVar('category'),
             'start_date' => $this->request->getVar('start_date'),
             'end_date' => $this->request->getVar('end_date'),
             'status' => $this->request->getVar('status'),

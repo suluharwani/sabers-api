@@ -56,3 +56,15 @@ $routes->delete('api/projects/(:num)', 'Api\ProjectController::delete/$1', ['fil
 $routes->post('api/blogs', 'Api\BlogController::create', ['filter' => 'auth']);
 $routes->put('api/blogs/(:num)', 'Api\BlogController::update/$1', ['filter' => 'auth']);
 $routes->delete('api/blogs/(:num)', 'Api\BlogController::delete/$1', ['filter' => 'auth']);
+
+
+// Certification API Routes
+$routes->get('api/certifications', 'Api\CertificationController::index');
+$routes->get('api/certifications/(:num)', 'Api\CertificationController::show/$1');
+$routes->post('api/certifications', 'Api\CertificationController::create', ['filter' => 'auth']);
+$routes->put('api/certifications/(:num)', 'Api\CertificationController::update/$1', ['filter' => 'auth']);
+$routes->delete('api/certifications/(:num)', 'Api\CertificationController::delete/$1', ['filter' => 'auth']);
+
+// Additional custom routes with auth filter
+$routes->get('api/certifications/active', 'Api\CertificationController::activeCertifications');
+$routes->get('api/certifications/expired', 'Api\CertificationController::expiredCertifications');
