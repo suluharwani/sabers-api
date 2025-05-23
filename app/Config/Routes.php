@@ -68,3 +68,4 @@ $routes->delete('api/certifications/(:num)', 'Api\CertificationController::delet
 // Additional custom routes with auth filter
 $routes->get('api/certifications/active', 'Api\CertificationController::activeCertifications');
 $routes->get('api/certifications/expired', 'Api\CertificationController::expiredCertifications');
+$routes->get('api/certifications/type/(:any)', 'Api\CertificationController::byType/$1');
