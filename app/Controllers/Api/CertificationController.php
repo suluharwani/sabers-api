@@ -17,16 +17,23 @@ class CertificationController extends ResourceController
 
     public function index()
     {
-        $data = $this->model->orderBy('issue_date', 'DESC')->findAll();
-        return $this->respond($data);
-    }
-
-    public function show($id = null)
-    {
-        $data = $this->model->find($id);
-        if (!$data) {
-            return $this->failNotFound('Certification record not found');
+        // Ambil parameter filter jika ada
+        $type = $this->request->getGet('type');
+        $status = $this->request->getGet('status');
+        
+        $builder = $this->model->builder();
+        
+        // Filter berdasarkan type jika ada
+        if (!empty($type) && in_array($type, ['HR', 'Company'])) {
+            $builder->where('type', $type);
         }
+        
+        // Filter berdasarkan status jika ada
+        if (!empty($status) && in_array($status, ['active', 'expired', 'revoked'])) {
+            $builder->where('status', $status);
+        }
+        
+        $data = $builder->orderBy('issue_date', 'DESC')->get()->getResult();
         return $this->respond($data);
     }
 
@@ -34,7 +41,7 @@ class CertificationController extends ResourceController
     {
         $rules = [
             'certification_name' => 'required|min_length[3]',
-            'issuing_organization' => 'required|min_length[3]',
+            'type' => 'required|in_list[HR,Company]',
             'issue_date' => 'required|valid_date',
             'expiration_date' => 'permit_empty|valid_date',
             'credential_id' => 'permit_empty|max_length[100]',
@@ -48,7 +55,7 @@ class CertificationController extends ResourceController
 
         $data = [
             'certification_name' => $this->request->getVar('certification_name'),
-            'issuing_organization' => $this->request->getVar('issuing_organization'),
+            'type' => $this->request->getVar('type'),
             'issue_date' => $this->request->getVar('issue_date'),
             'expiration_date' => $this->request->getVar('expiration_date'),
             'credential_id' => $this->request->getVar('credential_id'),
@@ -62,6 +69,27 @@ class CertificationController extends ResourceController
         return $this->respondCreated($data);
     }
 
+    public function show($id = null)
+    {
+        $data = $this->model->find($id);
+        if (!$data) {
+            return $this->failNotFound('Certification record not found');
+        }
+        return $this->respond($data);
+    }
+
+  public function byType($type)
+    {
+        if (!in_array($type, ['HR', 'Company'])) {
+            return $this->failValidationError('Invalid type');
+        }
+        
+        $data = $this->model->where('type', $type)
+                          ->orderBy('issue_date', 'DESC')
+                          ->findAll();
+        return $this->respond($data);
+    }
+
     public function update($id = null)
     {
         $certification = $this->model->find($id);
@@ -71,7 +99,7 @@ class CertificationController extends ResourceController
 
         $rules = [
             'certification_name' => 'permit_empty|min_length[3]',
-            'issuing_organization' => 'permit_empty|min_length[3]',
+            'type' => 'in_list[HR,Company]',
             'issue_date' => 'permit_empty|valid_date',
             'expiration_date' => 'permit_empty|valid_date',
             'credential_id' => 'permit_empty|max_length[100]',
@@ -85,7 +113,7 @@ class CertificationController extends ResourceController
 
         $data = [
             'certification_name' => $this->request->getVar('certification_name') ?? $certification['certification_name'],
-            'issuing_organization' => $this->request->getVar('issuing_organization') ?? $certification['issuing_organization'],
+            'type' => $this->request->getVar('type') ?? $certification['type'],
             'issue_date' => $this->request->getVar('issue_date') ?? $certification['issue_date'],
             'expiration_date' => $this->request->getVar('expiration_date') ?? $certification['expiration_date'],
             'credential_id' => $this->request->getVar('credential_id') ?? $certification['credential_id'],

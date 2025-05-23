@@ -10,7 +10,7 @@ class CertificationModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = [
         'certification_name',
-        'issuing_organization',
+        'type',
         'issue_date',
         'expiration_date',
         'credential_id',
@@ -22,7 +22,7 @@ class CertificationModel extends Model
     protected $updatedField = 'updated_at';
     protected $validationRules = [
         'certification_name' => 'required|min_length[3]',
-        'issuing_organization' => 'required|min_length[3]',
+        'type' => 'required',
         'issue_date' => 'required|valid_date',
         'status' => 'permit_empty|in_list[active,expired,revoked]'
     ];
