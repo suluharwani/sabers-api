@@ -11,6 +11,7 @@ class CertificationModel extends Model
     protected $allowedFields = [
         'certification_name',
         'type',
+        'description', // Added description
         'issue_date',
         'expiration_date',
         'credential_id',
@@ -22,7 +23,7 @@ class CertificationModel extends Model
     protected $updatedField = 'updated_at';
     protected $validationRules = [
         'certification_name' => 'required|min_length[3]',
-        'type' => 'required',
+        'type' => 'required|in_list[HR,Company]',
         'issue_date' => 'required|valid_date',
         'status' => 'permit_empty|in_list[active,expired,revoked]'
     ];
