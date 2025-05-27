@@ -33,9 +33,9 @@ class SponsorController extends ResourceController
     public function create()
     {
         $rules = [
-            // 'name' => 'required|min_length[3]',
-            // 'logo' => 'uploaded[logo]|max_size[logo,4096]|is_image[logo]',
-            // 'website' => 'valid_url_strict[https]|permit_empty'
+            'name' => 'required|min_length[3]',
+            'logo' => 'uploaded[logo]|max_size[logo,4096]|is_image[logo]',
+            'website' => 'valid_url_strict[https]|permit_empty'
         ];
 
         if (!$this->validate($rules)) {

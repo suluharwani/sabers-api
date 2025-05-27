@@ -9,15 +9,14 @@ class ProjectModel extends Model
     protected $table = 'projects';
     protected $primaryKey = 'id';
     protected $allowedFields = [
-        'title', 'client_id', 'description', 'thumbnail',
-        'start_date', 'end_date', 'status', 'budget', 'location','category'
+        'title', 'client_id', 'description',
+        'start_date', 'end_date', 'status', 'budget', 'location'
     ];
     protected $useTimestamps = true;
     protected $dateFormat = 'datetime';
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
 
-    // Validation rules
     protected $validationRules = [
         'title' => 'required|min_length[3]',
         'start_date' => 'required|valid_date',
@@ -27,15 +26,27 @@ class ProjectModel extends Model
         'location' => 'permit_empty|min_length[2]'
     ];
 
-    public function getWithClient($id = null)
+    public function getWithClientAndImages($id = null)
     {
         $this->select('projects.*, clients.name as client_name, clients.company as client_company');
         $this->join('clients', 'clients.id = projects.client_id', 'left');
         
         if ($id !== null) {
-            return $this->find($id);
+            $project = $this->find($id);
+            if ($project) {
+                $imageModel = new ProjectImageModel();
+                $project['images'] = $imageModel->where('project_id', $id)->findAll();
+            }
+            return $project;
         }
         
-        return $this->findAll();
+        $projects = $this->findAll();
+        $imageModel = new ProjectImageModel();
+        
+        foreach ($projects as &$project) {
+            $project['images'] = $imageModel->where('project_id', $project['id'])->findAll();
+        }
+        
+        return $projects;
     }
 }

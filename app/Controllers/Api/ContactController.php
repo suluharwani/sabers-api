@@ -33,11 +33,11 @@ class ContactController extends ResourceController
     public function create()
     {
         $rules = [
-            // 'name' => 'required|min_length[3]',
-            // 'email' => 'required|valid_email',
-            // 'subject' => 'required|min_length[5]',
-            // 'message' => 'required|min_length[10]',
-            // 'phone' => 'permit_empty|numeric|min_length[10]'
+            'name' => 'required|min_length[3]',
+            'email' => 'required|valid_email',
+            'subject' => 'required|min_length[5]',
+            'message' => 'required|min_length[10]',
+            'phone' => 'permit_empty|numeric|min_length[10]'
         ];
 
         if (!$this->validate($rules)) {

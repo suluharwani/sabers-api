@@ -71,10 +71,10 @@ class ClientController extends ResourceController
         }
 
         $rules = [
-            // 'name' => 'required|min_length[3]',
-            // 'company' => 'required|min_length[2]',
-            // 'website' => 'valid_url_strict[https]|permit_empty',
-            // 'industry' => 'permit_empty|min_length[2]|max_length[100]'
+            'name' => 'required|min_length[3]',
+            'company' => 'required|min_length[2]',
+            'website' => 'valid_url_strict[https]|permit_empty',
+            'industry' => 'permit_empty|min_length[2]|max_length[100]'
         ];
 
         if ($this->request->getFile('logo') !== null) {
