@@ -10,9 +10,9 @@ $routes = Services::routes();
 $routes->get('/', 'DocsController::index');
 
 // Public Auth Routes
+$routes->options('api/login', 'Api\AuthController::options', ['filter' => 'cors']);
+$routes->post('api/login', 'Api\AuthController::login', ['filter' => 'cors']);
 $routes->post('api/register', 'Api\AuthController::register');
-$routes->match(['post', 'options'], 'api/login', 'Api\AuthController::login');
-
 
 // Public GET Routes (tanpa filter auth)
 $routes->get('api/users', 'Api\UserController::index');

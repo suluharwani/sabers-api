@@ -14,12 +14,13 @@ class Filters extends BaseConfig
     public $globals = [
         'before' => [
             'auth' => ['except' => ['api/login', 'api/register', 'api/users','api/sliders','api/sponsors','api/contacts','api/clients','api/projects','api/projects/*','api/users/*','api/sliders/*','api/sponsors/*','api/contacts/*','api/clients/*','api/blogs','api/certifications','api/certifications/*']],
+            'cors',
         ],
         'after' => [
             // 'toolbar',
         ]
     ];
 
-    public $methods = [];
+    public $methods = ['post' => ['csrf', 'cors'],];
     public $filters = [];
 }
