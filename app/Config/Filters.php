@@ -8,7 +8,8 @@ use App\Filters\AuthFilter;
 class Filters extends BaseConfig
 {
     public $aliases = [
-        'auth' => AuthFilter::class
+        'auth' => AuthFilter::class,
+        'cors'     => \App\Filters\CorsFilter::class, 
     ];
 
     public $globals = [
