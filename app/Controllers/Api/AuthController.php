@@ -9,61 +9,66 @@ use App\Models\UserModel;
 class AuthController extends ResourceController
 {
     protected $format = 'json';
-
-public function login()
-{
-    $method = $this->request->getMethod();
-
-    // Handle preflight OPTIONS request
-    if ($method === 'options') {
+    public function options()
+    {
         return $this->response
-            ->setStatusCode(200)
-            ->setHeader('Access-Control-Allow-Origin', 'https://sabers.web.id')
-            ->setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+            ->setHeader('Access-Control-Allow-Origin', '*')
             ->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-            ->setBody('')
-            ->send();
-        exit;
+            ->setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST, GET, PUT, DELETE')
+            ->setStatusCode(200);
+    }
+   public function login()
+    {
+        // Handle preflight OPTIONS request
+        if ($this->request->getMethod() === 'options') {
+            return $this->options();
+        }
+
+        $rules = [
+            'email' => 'required|valid_email',
+            'password' => 'required'
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->failValidationError($this->validator->getErrors());
+        }
+
+        $model = new UserModel();
+        $user = $model->findByEmail($this->request->getJsonVar('email'));
+
+        if (!$user) {
+            return $this->failNotFound('Email not found');
+        }
+
+        if (!password_verify($this->request->getJsonVar('password'), $user['password'])) {
+            return $this->failUnauthorized('Invalid password');
+        }
+
+        $key = getenv('JWT_SECRET');
+        $payload = [
+            'iat' => time(),
+            'exp' => time() + (60 * 60 * 24), // 24 hours
+            'uid' => $user['id'],
+            'email' => $user['email'],
+            'name' => $user['name']
+        ];
+
+        $token = JWT::encode($payload, $key, 'HS256');
+
+        return $this->respond([
+            'success' => true,
+            'message' => 'Login successful',
+            'data' => [
+                'token' => $token,
+                'user' => [
+                    'id' => $user['id'],
+                    'name' => $user['name'],
+                    'email' => $user['email']
+                ]
+            ]
+        ]);
     }
 
-    // Tambahkan header CORS untuk response POST
-    $this->response->setHeader('Access-Control-Allow-Origin', 'https://sabers.web.id');
-
-    // Validasi input
-    $rules = [
-        'email' => 'required|valid_email',
-        'password' => 'required'
-    ];
-
-    if (!$this->validate($rules)) {
-        return $this->fail($this->validator->getErrors());
-    }
-
-    $model = new UserModel();
-    $user = $model->findByEmail($this->request->getVar('email'));
-
-    if (!$user) {
-        return $this->failNotFound('Email not found');
-    }
-
-    if (!password_verify($this->request->getVar('password'), $user['password'])) {
-        return $this->fail('Invalid password');
-    }
-
-    $key = getenv('JWT_SECRET');
-    $payload = [
-        'iat' => time(),
-        'exp' => time() + (60 * 60 * 24), // 24 hours
-        'uid' => $user['id'],
-    ];
-
-    $token = JWT::encode($payload, $key, 'HS256');
-
-    return $this->respond([
-        'status' => 200,
-        'token' => $token
-    ]);
-}
     public function register()
     {
         $rules = [
