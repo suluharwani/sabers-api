@@ -12,6 +12,7 @@ $routes->get('/', 'DocsController::index');
 // Public Auth Routes
 $routes->post('api/login', 'Api\AuthController::login');
 $routes->post('api/register', 'Api\AuthController::register');
+$routes->options('api/login', 'Api\AuthController::login');
 
 // Public GET Routes (tanpa filter auth)
 $routes->get('api/users', 'Api\UserController::index');
