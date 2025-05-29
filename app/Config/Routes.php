@@ -10,7 +10,8 @@ $routes = Services::routes();
 $routes->get('/', 'DocsController::index');
 
 // Public Auth Routes
-// $routes->options('api/login', 'Api\AuthController::options', );
+$routes->options('api/login', 'Api\AuthController::options', );
+$routes->options('api/clients', 'Api\AuthController::options', );
 $routes->post('api/login', 'Api\AuthController::login', );
 $routes->post('api/register', 'Api\AuthController::register');
 
