@@ -71,14 +71,14 @@ class ClientController extends ResourceController
         }
 
         $rules = [
-            'name' => 'required|min_length[3]',
-            'company' => 'required|min_length[2]',
+            'name' => 'min_length[3]',
+            'company' => 'min_length[2]',
             'website' => 'valid_url_strict[https]|permit_empty',
             'industry' => 'permit_empty|min_length[2]|max_length[100]'
         ];
 
         if ($this->request->getFile('logo') !== null) {
-            $rules['logo'] = 'uploaded[logo]|max_size[logo,4096]|is_image[logo]';
+            $rules['logo'] = 'uploaded[logo]|is_image[logo]';
         }
 
         if (!$this->validate($rules)) {
