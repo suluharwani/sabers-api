@@ -9,7 +9,10 @@ use App\Models\UserModel;
 class AuthController extends ResourceController
 {
     protected $format = 'json';
-
+public function options()
+{
+    return $this->response->setStatusCode(204);
+}
     public function login()
     {
         $rules = [

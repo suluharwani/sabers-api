@@ -22,13 +22,17 @@ class CorsFilter implements FilterInterface
         return;
     }
 
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
-    {
-        $response
-            ->setHeader('Access-Control-Allow-Origin', '*')
-            ->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-KEY')
-            ->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-            
-        return $response;
+   public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+{
+    // Hanya tambahkan headers jika belum ada
+    if (!$response->hasHeader('Access-Control-Allow-Origin')) {
+        $response->setHeader('Access-Control-Allow-Origin', 'https://sabers.web.id');
     }
+    
+    $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+             ->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-KEY')
+             ->setHeader('Access-Control-Allow-Credentials', 'true');
+    
+    return $response;
+}
 }
