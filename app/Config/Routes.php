@@ -8,15 +8,32 @@ $routes = Services::routes();
 
 // Documentation Route
 $routes->get('/', 'DocsController::index');
+$routes->options('/', 'Api\AuthController::options');
 
 // Public Auth Routes
-$routes->options('api/login', 'Api\AuthController::options', );
-$routes->options('api/clients', 'Api\AuthController::options', );
-$routes->options('api/clients/(:num)', 'Api\AuthController::options', );
-$routes->post('api/login', 'Api\AuthController::login', );
+$routes->options('api/login', 'Api\AuthController::options');
+$routes->options('api/register', 'Api\AuthController::options');
+$routes->options('api/clients', 'Api\AuthController::options');
+$routes->options('api/clients/(:num)', 'Api\AuthController::options');
+$routes->post('api/login', 'Api\AuthController::login');
 $routes->post('api/register', 'Api\AuthController::register');
 
-// Public GET Routes (tanpa filter auth)
+// Public GET Routes (tanpa filter auth) dengan OPTIONS
+$routes->options('api/users', 'Api\AuthController::options');
+$routes->options('api/users/(:num)', 'Api\AuthController::options');
+$routes->options('api/sliders', 'Api\AuthController::options');
+$routes->options('api/sliders/(:num)', 'Api\AuthController::options');
+$routes->options('api/sponsors', 'Api\AuthController::options');
+$routes->options('api/sponsors/(:num)', 'Api\AuthController::options');
+$routes->options('api/contacts', 'Api\AuthController::options');
+$routes->options('api/contacts/(:num)', 'Api\AuthController::options');
+$routes->options('api/clients', 'Api\AuthController::options');
+$routes->options('api/clients/(:num)', 'Api\AuthController::options');
+$routes->options('api/projects', 'Api\AuthController::options');
+$routes->options('api/projects/(:num)', 'Api\AuthController::options');
+$routes->options('api/blogs', 'Api\AuthController::options');
+$routes->options('api/blogs/(:num)', 'Api\AuthController::options');
+
 $routes->get('api/users', 'Api\UserController::index');
 $routes->get('api/users/(:num)', 'Api\UserController::show/$1');
 $routes->get('api/sliders', 'Api\SliderController::index');
@@ -31,7 +48,23 @@ $routes->get('api/projects', 'Api\ProjectController::index');
 $routes->get('api/projects/(:num)', 'Api\ProjectController::show/$1', ['filter' => 'cors']);
 $routes->get('api/blogs', 'Api\BlogController::index');
 $routes->get('api/blogs/(:num)', 'Api\BlogController::show/$1');
-// Protected API Routes (dengan filter auth)
+
+// Protected API Routes (dengan filter auth) dengan OPTIONS
+$routes->options('api/users', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/users/(:num)', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/sliders', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/sliders/(:num)', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/sponsors', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/sponsors/(:num)', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/contacts', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/contacts/(:num)', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/clients', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/clients/(:num)', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/projects', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/projects/(:num)', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/blogs', 'Api\AuthController::options', ['filter' => 'auth']);
+$routes->options('api/blogs/(:num)', 'Api\AuthController::options', ['filter' => 'auth']);
+
 $routes->post('api/users', 'Api\UserController::create', ['filter' => 'auth']);
 $routes->put('api/users/(:num)', 'Api\UserController::update/$1', ['filter' => 'auth']);
 $routes->delete('api/users/(:num)', 'Api\UserController::delete/$1', ['filter' => 'auth']);
@@ -60,8 +93,13 @@ $routes->post('api/blogs', 'Api\BlogController::create', ['filter' => 'auth']);
 $routes->put('api/blogs/(:num)', 'Api\BlogController::update/$1', ['filter' => 'auth']);
 $routes->delete('api/blogs/(:num)', 'Api\BlogController::delete/$1', ['filter' => 'auth']);
 
+// Certification API Routes dengan OPTIONS
+$routes->options('api/certifications', 'Api\AuthController::options');
+$routes->options('api/certifications/(:num)', 'Api\AuthController::options');
+$routes->options('api/certifications/active', 'Api\AuthController::options');
+$routes->options('api/certifications/expired', 'Api\AuthController::options');
+$routes->options('api/certifications/type/(:any)', 'Api\AuthController::options');
 
-// Certification API Routes
 $routes->get('api/certifications', 'Api\CertificationController::index');
 $routes->get('api/certifications/(:num)', 'Api\CertificationController::show/$1');
 $routes->post('api/certifications', 'Api\CertificationController::create', ['filter' => 'auth']);
