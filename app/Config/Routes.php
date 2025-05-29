@@ -10,8 +10,8 @@ $routes = Services::routes();
 $routes->get('/', 'DocsController::index');
 
 // Public Auth Routes
-$routes->options('api/login', 'Api\AuthController::options' );
-$routes->post('api/login', 'Api\AuthController::login');
+$routes->options('api/login', 'Api\AuthController::options', );
+$routes->post('api/login', 'Api\AuthController::login', );
 $routes->post('api/register', 'Api\AuthController::register');
 
 // Public GET Routes (tanpa filter auth)
