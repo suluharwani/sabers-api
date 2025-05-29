@@ -26,7 +26,7 @@ $routes->get('api/contacts/(:num)', 'Api\ContactController::show/$1');
 $routes->get('api/clients', 'Api\ClientController::index');
 $routes->get('api/clients/(:num)', 'Api\ClientController::show/$1');
 $routes->get('api/projects', 'Api\ProjectController::index');
-$routes->get('api/projects/(:num)', 'Api\ProjectController::show/$1');
+$routes->get('api/projects/(:num)', 'Api\ProjectController::show/$1', ['filter' => 'cors']);
 $routes->get('api/blogs', 'Api\BlogController::index');
 $routes->get('api/blogs/(:num)', 'Api\BlogController::show/$1');
 // Protected API Routes (dengan filter auth)
