@@ -26,7 +26,7 @@ class CorsFilter implements FilterInterface
 {
     // Hanya tambahkan headers jika belum ada
     if (!$response->hasHeader('Access-Control-Allow-Origin')) {
-        $response->setHeader('Access-Control-Allow-Origin', '*');
+        // $response->setHeader('Access-Control-Allow-Origin', '*');
     }
     
     $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
